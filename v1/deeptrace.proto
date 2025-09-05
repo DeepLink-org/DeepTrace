@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+package v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "../v1/;v1";
+
+// Debugging and diagnostic service
+service DeepTraceService {
+  // Get the most recent n lines of logs
+  rpc GetRecentLogs(GetRecentLogsRequest) returns (LogResponse);
+  
+  // Get process stack information by process type
+  rpc GetProcessStacks(GetProcessStacksRequest) returns (ProcessStacksResponse);
+
+  // Restart server
+  rpc RestartServer(RestartRequest) returns (RestartResponse);
+  // Get version information
+  rpc GetVersion(google.protobuf.Empty) returns (VersionResponse);
+}
+
+// ================= Log-related definitions =================
+
+// Log level enumeration
+enum LogLevel {
+  LOG_UNSPECIFIED = 0;
+  LOG_DEBUG = 1;
+  LOG_INFO = 2;
+  LOG_WARNING = 3;
+  LOG_ERROR = 4;
+  LOG_CRITICAL = 5;
+}
+
+// Single log entry
+message LogEntry {
+  google.protobuf.Timestamp timestamp = 1;  // Log timestamp
+  LogLevel level = 2;                       // Log level
+  int32 epoch = 3;
+  string message = 4;                       // Log content
+}
+
+message RankLog {
+  string rank = 1;                // Rank number
+  repeated LogEntry entries = 2;  // Log entries
+  int32 suspend_seconds = 3;     // Interval (in seconds) between the last line of log for this rank and the collection time
+  google.protobuf.Timestamp tail_time = 4;  // Log timestamp
+}
+
+// Request to get recent logs
+message GetRecentLogsRequest {
+  int32 max_lines = 1;
+  string work_dir = 2;
+
+  // Log level filter (optional)
+  // repeated LogLevel levels = 3;
+  // Search keyword (optional)
+  // string search_keyword = 4;
+}
+
+// Log response
+message LogResponse {
+  repeated RankLog ranklogs = 1;  // Rank logs
+}
+
+// ================= Process stack-related definitions =================
+
+// Process type enumeration
+enum ProcessType {
+  PROCESS_UNSPECIFIED = 0;
+  PROCESS_TRAINER = 1;       // Trainer process
+  PROCESS_DATA_LOADER = 2;   // Data loader process
+  PROCESS_LAUNCHER = 3;      // Launch process
+}
+
+// Single thread stack information
+message ThreadStack {
+  int32 thread_id = 1;          // Thread ID
+  string thread_name = 2;        // Thread name
+  repeated string stack_frames = 3; // Stack frame list (most recent first)
+}
+
+// Single process information
+message ProcessInfo {
+  int32 pid = 1;                   // Process ID
+  int32 ppid = 2;                 // Parent process ID
+  ProcessType type = 3;            // Process type
+  repeated ThreadStack threads = 4; // Thread stack information
+  string rank = 5;
+  string local_rank = 6;
+}
+
+message ProcessInfoList {
+  repeated ProcessInfo processes = 1;
+  int32 total_count = 2;
+}
+
+// Request to get process stacks
+message GetProcessStacksRequest {
+  // Target process type (required)
+  ProcessType process_type = 1;
+
+  // Rank (optional)
+  string rank = 2;
+}
+
+// Process stack response
+message ProcessStacksResponse {
+  repeated ProcessInfo processes = 1; // Process information list
+  int32 total_processes = 2;         // Total number of processes of this type
+  int32 sampled_processes = 3;       // Number of actually sampled processes
+  string snapshot_time = 4;           // Snapshot acquisition time
+}
+
+// ================= Error handling =================
+
+// Error status codes
+enum ErrorCode {
+  ERROR_UNKNOWN = 0;
+  ERROR_INVALID_PROCESS_TYPE = 1;
+  ERROR_PROCESS_NOT_FOUND = 2;
+  ERROR_LOG_SOURCE_NOT_FOUND = 3;
+  ERROR_PERMISSION_DENIED = 4;
+  ERROR_SNAPSHOT_FAILED = 5;
+}
+
+// Error details
+message ErrorDetail {
+  ErrorCode code = 1;               // Error code
+  string message = 2;               // Error description
+  map<string, string> context = 3;  // Error context
+}
+
+message RestartRequest {
+  string auth_token = 1;
+}
+
+message RestartResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Agent version information response
+message VersionResponse {
+  string version = 1;
+  string commit = 2;
+  string build_time = 3;
+  string build_tag = 4;
+}
+
+service AlertService {
+  // Receiving alert data is handled by the HTTP server
+  // rpc SendAlert(SendAlertRequest) returns (SendAlertResponse) {}
+  
+  // Client gets alert summary
+  rpc GetAlerts(GetAlertsRequest) returns (GetAlertsResponse) {}
+}
+
+enum Severity {
+    INFO = 0;
+    WARNING = 1;
+    ERROR = 2;
+    CRITICAL = 3;
+}
+
+message GetAlertsRequest {
+  google.protobuf.Timestamp start_time = 1;     // Start timestamp (optional)
+  google.protobuf.Timestamp end_time = 2;       // End timestamp (optional)
+  Severity min_severity = 3;// Minimum severity level
+  bool unprocessed = 4; 
+}
+
+message AlertRecord {
+  string message = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  Severity severity = 3;
+}
+
+message GetAlertsResponse {
+  repeated AlertRecord alerts = 1;
+}

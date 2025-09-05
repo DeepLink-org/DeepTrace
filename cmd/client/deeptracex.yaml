@@ -1,0 +1,10 @@
+port: 50051
+work-dir: "" # The agent collects rank logs in the work-dir; if the work-dir where the task is executed is not injected into the agent, it can be passed through the client.
+max-line: 30 # Number of log lines to view
+process-type: "" # Specify the process type
+threshold: 120 # Time threshold to determine if the process is hanging
+interval-hang: 2 # Checkhang execution interval (minutes)
+job-id : "testx" # Job name
+min-severity : "INFO" # Minimum event severity level, default INFO to get all events
+interval-alert : 1 # Alerts execution interval (minutes)
+FS-URL : "https://open.feishu.cn/open-apis/bot/v2/hook/xxx" # Feishu link for pushing alerts

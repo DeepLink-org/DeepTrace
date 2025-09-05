@@ -1,0 +1,54 @@
+[
+  [
+    {
+      "pid": 40826,
+      "ppid": 39640,
+      "type": 2,
+      "threads": [
+        {
+          "thread_id": 40826,
+          "thread_name": "pt_data_worker",
+          "stack_frames": [
+            "File \"\u003cfrozen runpy\u003e\", line 198, in _run_module_as_main",
+            "File \"/usr/lib/python3.12/multiprocessing/context.py\", line 282, in _Popen\nreturn Popen(process_obj)",
+            "File \"/usr/lib/python3.12/multiprocessing/popen_fork.py\", line 19, in __init__\nself._launch(process_obj)",
+            "File \"/usr/lib/python3.12/multiprocessing/popen_fork.py\", line 71, in _launch\ncode = process_obj._bootstrap(parent_sentinel=child_r)",
+            "File \"/usr/lib/python3.12/multiprocessing/process.py\", line 314, in _bootstrap\nself.run()",
+            "File \"/usr/lib/python3.12/multiprocessing/process.py\", line 108, in run\nself._target(*self._args, **self._kwargs)",
+            "File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/_utils/worker.py\", line 349, in _worker_loop\ndata = fetcher.fetch(index)  # type: ignore[possibly-undefined]",
+            "File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/_utils/fetch.py\", line 52, in fetch\ndata = [self.dataset[idx] for idx in possibly_batched_index]",
+            "File \"/usr/local/lib/python3.12/dist-packages/xxx/tools/sft.py\", line 553, in __getitem__\ntime.sleep(2)"
+          ]
+        }
+      ],
+      "rank": "RANK7",
+      "local_rank": "RANK7"
+    }
+  ],
+  [
+    {
+      "pid": 40826,
+      "ppid": 39640,
+      "type": 2,
+      "threads": [
+        {
+          "thread_id": 40826,
+          "thread_name": "pt_data_worker",
+          "stack_frames": [
+            "File \"\u003cfrozen runpy\u003e\", line 198, in _run_module_as_main",
+            "File \"/usr/lib/python3.12/multiprocessing/context.py\", line 282, in _Popen\nreturn Popen(process_obj)",
+            "File \"/usr/lib/python3.12/multiprocessing/popen_fork.py\", line 19, in __init__\nself._launch(process_obj)",
+            "File \"/usr/lib/python3.12/multiprocessing/popen_fork.py\", line 71, in _launch\ncode = process_obj._bootstrap(parent_sentinel=child_r)",
+            "File \"/usr/lib/python3.12/multiprocessing/process.py\", line 314, in _bootstrap\nself.run()",
+            "File \"/usr/lib/python3.12/multiprocessing/process.py\", line 108, in run\nself._target(*self._args, **self._kwargs)",
+            "File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/_utils/worker.py\", line 349, in _worker_loop\ndata = fetcher.fetch(index)  # type: ignore[possibly-undefined]",
+            "File \"/usr/local/lib/python3.12/dist-packages/torch/utils/data/_utils/fetch.py\", line 52, in fetch\ndata = [self.dataset[idx] for idx in possibly_batched_index]",
+            "File \"/usr/local/lib/python3.12/dist-packages/xxx/tools/sft.py\", line 563, in __getitem__\ntime.sleep(2)"
+          ]
+        }
+      ],
+      "rank": "RANK7",
+      "local_rank": "RANK7"
+    }
+  ]
+  ]

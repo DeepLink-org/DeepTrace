@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pushgateway
+  namespace: monitoring
+  labels:
+    app: pushgateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pushgateway
+  template:
+    metadata:
+      labels:
+        app: pushgateway
+    spec:
+      containers:
+      - name: pushgateway
+        image: prom/pushgateway:v1.7.0  
+        imagePullPolicy: IfNotPresent
+        args:
+          - "--web.listen-address=:9091" 
+          - "--web.telemetry-path=/metrics" 
+          - "--persistence.file=/data/pushgateway.data"
+          - "--persistence.interval=5m" 
+          - "--log.level=info" 
+          - "--web.enable-admin-api"  
+          - "--web.enable-lifecycle" 
+        ports:
+        - containerPort: 9091
+          protocol: TCP
+        volumeMounts:
+          - name: storage
+            mountPath: /data
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9091
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: 9091
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: pushgateway-pvc  # PVC needs to be created in advance

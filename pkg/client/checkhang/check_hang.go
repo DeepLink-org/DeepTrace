@@ -44,10 +44,10 @@ func NewCmdCheckHang() *cobra.Command {
 		Short: "Intelligent hang detection",
 		Long: `Intelligently detect if the specified job is in a hang state.
 Usage:
-  client check-hang --job-id <job name> -a address_file [--work-dir <working directory>] [--max-line <maximum lines>] [--threshold <preliminary judgment threshold for hang time>] [--interval-hang <automatic execution interval in minutes>] [--port <server port>]
+  client check-hang --job-id <job name> -w clusterx [--work-dir <working directory>] [--max-line <maximum lines>] [--threshold <preliminary judgment threshold for hang time>] [--interval-hang <automatic execution interval in minutes>] [--port <server port>]
 
 Examples:
-  client check-hang --job-id my_job -a address_file --threshold 100 --interval-hang 5 --port 50051`,
+  client check-hang --job-id my_job -w clusterx --threshold 100 --interval-hang 5 --port 50051`,
 		Run: func(cmd *cobra.Command, args []string) {
 			jobName, _ := cmd.Flags().GetString("job-id")
 			if jobName == "" {
@@ -58,18 +58,18 @@ Examples:
 			} else {
 				fmt.Println("Note: No job name specified")
 			}
-			// Get address list file path
-			addressListPath, _ := cmd.Flags().GetString("address-list")
-			if addressListPath == "" {
-				addressListPath = viper.GetString("address-list")
+			// Get worker source
+			workSource, _ := cmd.Flags().GetString("worker-source")
+			if workSource == "" {
+				workSource = viper.GetString("worker-source")
 			}
-			if addressListPath == "" {
-				fmt.Println("Error: Must specify the path to the agent address list file")
+			if workSource == "" {
+				fmt.Println("Error: worker source must be specified")
 				os.Exit(1)
 			}
 
 			// Read address list
-			addressList, err := utils.ReadAddressListFromFile(addressListPath)
+			addressList, err := utils.GetWorkerList(workSource, jobName)
 			if err != nil {
 				fmt.Printf("Failed to read address list file: %v\n", err)
 				os.Exit(1)

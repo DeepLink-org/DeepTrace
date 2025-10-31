@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -17,6 +18,23 @@ import (
 	"golang.org/x/text/transform"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func GetWorkerList(workerSource, jobName string) ([]string, error) {
+	if workerSource == "clusterx" {
+		output, err := exec.Command("clusterx", "get-job", jobName).CombinedOutput()
+		if err != nil {
+			fmt.Println()
+		}
+
+		nodes, err1 := ExtractNodes(string(output))
+		if err1 != nil {
+			fmt.Printf("提取节点信息失败: %v\n", err1)
+		}
+		return nodes, nil
+	}
+
+	return ReadAddressListFromFile(workerSource)
+}
 
 // ExtractNodes extracts address information
 // It parses the output string to find the addresss list and processes it to extract hostnames.

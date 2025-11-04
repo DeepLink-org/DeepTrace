@@ -25,10 +25,10 @@ func NewCmdStacks() *cobra.Command {
 		Short: "Get information through stack",
 		Long: `Get stack information for the specified job.
 Usage:
-  client stacks --job-id <job name> -a address_file --process-type <process type> --rank <rank> [--port <service port>]
+  client stacks --job-id <job name> -w clusterx --process-type <process type> --rank <rank> [--port <service port>]
 
 Example:
-  client stacks --job-id my_job -a address_file --process-type PROCESS_TRAINER --rank 0 --port 50052`,
+  client stacks --job-id my_job -w clusterx --process-type PROCESS_TRAINER --rank 0 --port 50052`,
 		Run: func(cmd *cobra.Command, args []string) {
 			jobName, _ := cmd.Flags().GetString("job-id")
 			if jobName == "" {
@@ -40,17 +40,17 @@ Example:
 				fmt.Println("Note: Job name not specified")
 			}
 
-			// Get address list file path
-			addressListPath, _ := cmd.Flags().GetString("address-list")
-			if addressListPath == "" {
-				addressListPath = viper.GetString("address-list")
+			// Get worker source
+			workSource, _ := cmd.Flags().GetString("worker-source")
+			if workSource == "" {
+				workSource = viper.GetString("worker-source")
 			}
-			if addressListPath == "" {
-				fmt.Println("Error: Must specify the path to the agent address list file")
+			if workSource == "" {
+				fmt.Println("Error: worker source must be specified")
 				os.Exit(1)
 			}
 			// Read address list
-			addressList, err := utils.ReadAddressListFromFile(addressListPath)
+			addressList, err := utils.GetWorkerList(workSource, jobName)
 			if err != nil {
 				fmt.Printf("Failed to read address list file: %v\n", err)
 				os.Exit(1)

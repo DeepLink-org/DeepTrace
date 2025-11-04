@@ -1,7 +1,12 @@
-# DeepTrace
+<div align="center">
+  <img src="https://github.com/DeepLink-org/DeepTrace/releases/download/v0.1.0-beta/deeptrace.png" width="450"/>
 
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[English](README.md) | 简体中文
+   [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+   [English](README.md) | 简体中文
+</div>
+
+# DeepTrace
 
 ## 项目简介
 
@@ -56,7 +61,7 @@ make generate
 
 执行hang检测：
 ```bash
-client check-hang --job-id my_job -a address_file --threshold 120 --interval 5
+client check-hang --job-id my_job -w clusterx --threshold 120 --interval 5
 ```
 
 ## API文档

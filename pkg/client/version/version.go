@@ -39,10 +39,10 @@ func NewCmdVersion() *cobra.Command {
 		Short: "Get client and agent related information",
 		Long: `Get client and agent related information.
 Usage:
-  client version --job-id <job name> -a address_file [--port <service port>]
+  client version --job-id <job name> -w clusterx [--port <service port>]
 
 Example:
-  client version --job-id my_job -a address_file --port 50052`,
+  client version --job-id my_job -w clusterx --port 50052`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println(v.GetClientVersionInfo())
 			jobName, _ := cmd.Flags().GetString("job-id")
@@ -55,17 +55,17 @@ Example:
 				fmt.Println("Note: Job name not specified")
 			}
 
-			// Get address list file path
-			addressListPath, _ := cmd.Flags().GetString("address-list")
-			if addressListPath == "" {
-				addressListPath = viper.GetString("address-list")
+			// Get worker source
+			workSource, _ := cmd.Flags().GetString("worker-source")
+			if workSource == "" {
+				workSource = viper.GetString("worker-source")
 			}
-			if addressListPath == "" {
-				fmt.Println("Error: Must specify the path to the agent address list file")
+			if workSource == "" {
+				fmt.Println("Error: worker source must be specified")
 				os.Exit(1)
 			}
 			// Read address list
-			addressList, err := utils.ReadAddressListFromFile(addressListPath)
+			addressList, err := utils.GetWorkerList(workSource, jobName)
 			if err != nil {
 				fmt.Printf("Failed to read address list file: %v\n", err)
 				os.Exit(1)

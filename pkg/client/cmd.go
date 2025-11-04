@@ -45,7 +45,7 @@ Usage:
   deeptracex [subcommand] [parameters]
 
 Example:
-  deeptracex logs --job-id my_job -a address_file --port 50051`,
+  deeptracex logs --job-id my_job -w clusterx --port 50051`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			readConfig(configPath)
 		},
@@ -59,7 +59,7 @@ Example:
 	cmds.PersistentFlags().StringP("port", "p", "", "Specify service port number")
 	//rootCmd.PersistentFlags().StringP("username", "u", "", "Specify username")
 	cmds.PersistentFlags().StringVarP(&configPath, "config", "c", "", "Specify the path to the configuration file")
-	cmds.PersistentFlags().StringP("address-list", "a", "", "Specify the path to the agent address list file")
+	cmds.PersistentFlags().StringP("worker-source", "w", "", "Specify the workers of your job: clusterx or path to the file contains workers")
 
 	// Add subcommands directly to the root command
 	cmds.AddCommand(

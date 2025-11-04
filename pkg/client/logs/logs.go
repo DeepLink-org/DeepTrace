@@ -52,10 +52,10 @@ func NewCmdLogs() *cobra.Command {
 		Short: "Get log information",
 		Long: `Get log information for the specified job.
 Usage:
-  client logs --job-id <job name> -a address_file [--work-dir <working directory>] [--max-line <maximum lines>] [--port <server port>]
+  client logs --job-id <job name> -w clusterx [--work-dir <working directory>] [--max-line <maximum lines>] [--port <server port>]
 
 Examples:
-  client logs --job-id my_job -a address_file --work-dir /mnt/shared-storage --max-line 30 --port 50052`,
+  client logs --job-id my_job -w clusterx --work-dir /mnt/shared-storage --max-line 30 --port 50052`,
 		Run: func(cmd *cobra.Command, args []string) {
 			jobName, _ := cmd.Flags().GetString("job-id")
 			if jobName == "" {
@@ -67,17 +67,17 @@ Examples:
 				fmt.Println("Note: No job name specified")
 			}
 
-			// Get address list file path
-			addressListPath, _ := cmd.Flags().GetString("address-list")
-			if addressListPath == "" {
-				addressListPath = viper.GetString("address-list")
+			// Get worker source
+			workSource, _ := cmd.Flags().GetString("worker-source")
+			if workSource == "" {
+				workSource = viper.GetString("worker-source")
 			}
-			if addressListPath == "" {
-				fmt.Println("Error: Must specify the path to the agent address list file")
+			if workSource == "" {
+				fmt.Println("Error: worker source must be specified")
 				os.Exit(1)
 			}
 			// Read address list
-			addressList, err := utils.ReadAddressListFromFile(addressListPath)
+			addressList, err := utils.GetWorkerList(workSource, jobName)
 			if err != nil {
 				fmt.Printf("Failed to read address list file: %v\n", err)
 				os.Exit(1)

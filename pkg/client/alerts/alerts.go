@@ -34,12 +34,12 @@ func NewCmdAlerts() *cobra.Command {
 Support filtering by time range and severity level.
 
 Usage:
-  client alerts --job-id <job name> -a address_file [--interval-alert <interval minutes>][--min-severity <minimum severity level>] [--port <server port>]
+  client alerts --job-id <job name> -w clusterx [--interval-alert <interval minutes>][--min-severity <minimum severity level>] [--port <server port>]
 
 Severity levels: INFO, WARNING, ERROR, CRITICAL
 
 Example:
-  client alerts --job-id my_job -a address_file --interval-alert 2 --min-severity WARNING  # Get WARNING level and above alerts every 2 minutes
+  client alerts --job-id my_job -w clusterx --interval-alert 2 --min-severity WARNING  # Get WARNING level and above alerts every 2 minutes
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			// Get job name
@@ -53,17 +53,17 @@ Example:
 			}
 			fmt.Printf("Using job name: %s\n", jobName)
 
-			// Get address list file path
-			addressListPath, _ := cmd.Flags().GetString("address-list")
-			if addressListPath == "" {
-				addressListPath = viper.GetString("address-list")
+			// Get worker source
+			workSource, _ := cmd.Flags().GetString("worker-source")
+			if workSource == "" {
+				workSource = viper.GetString("worker-source")
 			}
-			if addressListPath == "" {
-				fmt.Println("Error: Agent address list file path must be specified")
+			if workSource == "" {
+				fmt.Println("Error: worker source must be specified")
 				os.Exit(1)
 			}
 			// Read address list
-			addressList, err := utils.ReadAddressListFromFile(addressListPath)
+			addressList, err := utils.GetWorkerList(workSource, jobName)
 			if err != nil {
 				fmt.Printf("Failed to read address list file: %v\n", err)
 				os.Exit(1)
